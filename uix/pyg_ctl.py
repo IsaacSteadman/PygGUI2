@@ -1,5 +1,5 @@
 import pygame
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, TYPE_CHECKING
 
 
 class PygCtl(object):

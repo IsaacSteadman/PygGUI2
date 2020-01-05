@@ -1,14 +1,13 @@
 from typing import Optional, List, Dict, Callable
-from .uix.pyg_ctl import PygCtl
 from .base.pyg_types import Point, Color, Number
 import pygame
 
 
 class App(object):
-    def __init__(self):
+    def __init__(self, surf: Optional[pygame.SurfaceType]=None):
         self.ctls: List[PygCtl] = []  # list of displayed controls
         self.redraw: List[PygCtl] = []  # list of controls that need to be redrawn
-        self.surf: Optional[pygame.SurfaceType] = None  # pygame surface to use
+        self.surf: Optional[pygame.SurfaceType] = surf  # pygame surface to use
         self.cur_pos: Point = (0, 0)
         self.cur_ctl: Optional[PygCtl] = None
         self.should_run: bool = True
@@ -25,11 +24,11 @@ class App(object):
 
     def run(self):
         while self.should_run:
-            pass
+            self.process_event(pygame.event.wait())
 
     def calc_collide(self):
         if self.cur_ctl is None or not self.cur_ctl.collide_pt(self.cur_pos):
-            if self.cur_ctl is not None and self.cur_ctl.on_mouse_exit():
+            if self.cur_ctl is not None and self.cur_ctl.on_mouse_exit(self):
                 self.set_redraw(self.cur_ctl)
             self.cur_ctl = None
             for ctl in self.ctls:
@@ -45,7 +44,7 @@ class App(object):
             for c in range(pos):
                 ctl = self.ctls[c]
                 if ctl.collide_pt(self.cur_pos):
-                    if self.cur_ctl.on_mouse_exit():
+                    if self.cur_ctl.on_mouse_exit(self):
                         self.set_redraw(self.cur_ctl)
                     if ctl.on_mouse_enter(self):
                         self.set_redraw(ctl)
@@ -126,7 +125,7 @@ class App(object):
         pygame.display.update(pre_draw_rects)
         self.used_time += pygame.time.get_ticks() - begin_time
 
-    def set_redraw(self, ctl: PygCtl):
+    def set_redraw(self, ctl: "PygCtl"):
         self.redraw.append(ctl)
         ctl.dirty = True
         self.should_redraw = True
@@ -178,3 +177,6 @@ class App(object):
             return tgt.fill(self.bkgr_color, rect)
         else:
             return tgt.blit(src, rect, rect)
+
+
+from .uix.pyg_ctl import PygCtl
