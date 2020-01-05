@@ -55,6 +55,36 @@ def test_press_button():
     pygame.quit()
 
 
+def test_toggle_button():
+    from .base.pyg_colors import RED, GREEN, WHITE, BLACK, BLUE
+    from .pyg_app import App
+    from .uix.togglebutton import ToggleButton
+    import pygame
+    pygame.display.init()
+    pygame.font.init()
+    fnt0 = pygame.font.SysFont("Courier New", 12)
+    fnt1 = pygame.font.SysFont("Comic Sans", 12)
+    fnt2 = pygame.font.SysFont("Times New Roman", 12)
+    fnt3 = pygame.font.SysFont("Arial", 12)
+    app = App(pygame.display.set_mode((640, 480)))
+    act_fns = [
+        lambda btn, pos: print("ACTION[0]: Toggle Button (%s) at position" % btn.lbl, pos),
+        lambda btn, pos: print("ACTION[1]: Toggle Button (%s) at position" % btn.lbl, pos),
+        lambda btn, pos: print("ACTION[2]: Toggle Button (%s) at position" % btn.lbl, pos)
+    ]
+    app.ctls.extend([
+        ToggleButton("hello world [Courier New]", (160, 160), fnt0, lst_actions=act_fns),
+        ToggleButton("hello world [Comic Sans]", (160, 180), fnt1, [(RED, WHITE), (GREEN, WHITE)], act_fns),
+        ToggleButton("hello world 1 [Comic Sans]", (160, 200), fnt1, [(RED, WHITE), (GREEN, WHITE), (BLUE, WHITE)], act_fns),
+        ToggleButton("hello world [Times New Roman]", (160, 220), fnt2, [(BLACK, RED), (BLACK, GREEN)], act_fns),
+        ToggleButton("hello world [Arial]", (160, 240), fnt3, [(None, WHITE), (None, GREEN)], act_fns),
+        ToggleButton("hello world 1 [Arial]", (160, 260), fnt3, [(None, WHITE), (None, GREEN), (None, BLUE)], act_fns),
+        ToggleButton("hello world 2 [Comic Sans]", (160, 280), fnt1, [(GREEN, WHITE), (RED, WHITE)], act_fns)
+    ])
+    app.run()
+    pygame.quit()
+
+
 if arg_data.test_name == "label":
     test_label()
 elif arg_data.test_name == "press-button":
