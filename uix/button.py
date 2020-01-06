@@ -39,7 +39,15 @@ class Button(PygCtl):
         data = self.glob_captures[evt.type]
         if isinstance(data, dict):
             for k in data:
-                if getattr(evt, k) != data[k]:
+                if k.endswith("!&"):
+                    k = k[:-2]
+                    if getattr(evt, k) & data[k]:
+                        return False
+                elif k.endswith("&"):
+                    k = k[:-1]
+                    if (getattr(evt, k) & data[k]) == 0:
+                        return False
+                elif getattr(evt, k) != data[k]:
                     return False
             return True
         elif callable(data):
