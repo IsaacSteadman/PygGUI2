@@ -40,12 +40,12 @@ class Button(PygCtl):
         if isinstance(data, dict):
             for k in data:
                 if k.endswith("!&"):
-                    k = k[:-2]
-                    if getattr(evt, k) & data[k]:
+                    k1 = k[:-2]
+                    if getattr(evt, k1) & data[k]:
                         return False
                 elif k.endswith("&"):
-                    k = k[:-1]
-                    if (getattr(evt, k) & data[k]) == 0:
+                    k1 = k[:-1]
+                    if (getattr(evt, k1) & data[k]) == 0:
                         return False
                 elif getattr(evt, k) != data[k]:
                     return False
