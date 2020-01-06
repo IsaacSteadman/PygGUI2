@@ -14,8 +14,11 @@ class PygCtl(object):
         return []
 
     def dirty_redraw(self, app: "App", lst_rects: List[pygame.rect.RectType]) -> List[pygame.rect.RectType]:
-        if self.prev_rect is not None and self.prev_rect.collidelist(lst_rects):
-            return self.draw(app)
+        try:
+            if self.prev_rect is not None and self.prev_rect.collidelist(lst_rects):
+                return self.draw(app)
+        except TypeError:
+            print(lst_rects)
         return []
 
     def on_evt(self, app: "App", evt: pygame.event.EventType, pos: Tuple[int, int]) -> bool:

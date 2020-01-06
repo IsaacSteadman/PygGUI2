@@ -1,17 +1,4 @@
-def binary_approx1(lst: list, v) -> int:
-    length = len(lst)
-    cur_len = length
-    pos = length >> 1
-    while cur_len > 0:
-        if (pos + 1 >= len(lst) or v < lst[pos + 1]) and v >= lst[pos]:
-            return pos
-        elif v < lst[pos]:
-            cur_len >>= 1
-            pos -= (cur_len + 1) >> 1
-        else:
-            cur_len = (cur_len - 1) >> 1
-            pos += (cur_len >> 1) + 1
-    return length
+from .misc import binary_approx1
 
 
 class TextLineView(object):
