@@ -1,4 +1,3 @@
-from sys import argv
 from argparse import ArgumentParser
 
 parser = ArgumentParser()
@@ -227,6 +226,40 @@ def test_entry_box():
     pygame.quit()
 
 
+def test_progress_bar():
+    from .base.pyg_colors import RED, GREEN, WHITE
+    from .base.pyg_types import Number
+    from .pyg_app import App
+    from .uix.progressbar import ProgressBar, TooltipInfo
+    import pygame
+    pygame.display.init()
+    pygame.font.init()
+    fnt0 = pygame.font.SysFont("Courier New", 12)
+    fnt1 = pygame.font.SysFont("Times New Roman", 12)
+    app = App(pygame.display.set_mode((640, 480)))
+
+    def act_fn(prog_bar: ProgressBar, frac: Number):
+        print("BEFORE prog_bar.value = ", prog_bar.value)
+        prog_bar.set_value(app, frac)
+        print("AFTER prog_bar.value = ", prog_bar.value)
+
+    def hover_fn(prog_bar: ProgressBar, frac: Number) -> str:
+        return "%.4g" % frac
+    
+    app.ctls.extend([
+        ProgressBar(
+            (32, 64), (512, 4), ((127, 127, 127), (0, 255, 255)), act_fn,
+            TooltipInfo(hover_fn, fnt0, (None, GREEN), True)
+        ),
+        ProgressBar(
+            (32, 128), (512, 4), (None, (255, 255, 0)), act_fn,
+            TooltipInfo(hover_fn, fnt1, (RED, WHITE), False)
+        )
+    ])
+    app.run()
+    pygame.quit()
+
+
 if arg_data.test_name == "label":
     test_label()
 elif arg_data.test_name == "press-button":
@@ -237,5 +270,7 @@ elif arg_data.test_name == "entry-line":
     test_entry_line()
 elif arg_data.test_name == "entry-box":
     test_entry_box()
+elif arg_data.test_name == "progress-bar":
+    test_progress_bar()
 else:
     print("Unrecognized test name '%s'" % arg_data.test_name)

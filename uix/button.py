@@ -1,6 +1,8 @@
-from typing import Union, Dict, Callable, Optional
+from typing import Union, Dict, Callable, Optional, List
+from ..base.pyg_types import IntPoint
 from .pyg_ctl import PygCtl
 import pygame
+
 
 GlobCaptureType = Union[dict, Callable[[pygame.event.EventType], bool], int, bool]
 
@@ -12,7 +14,7 @@ class Button(PygCtl):
         self.tot_rect: Optional[pygame.rect.RectType] = None
         self.glob_captures: Dict[int, GlobCaptureType] = {}
 
-    def on_evt(self, app, evt, pos):
+    def on_evt(self, app: "App", evt: pygame.event.EventType, pos: IntPoint) -> bool:
         if evt.type == pygame.MOUSEBUTTONDOWN:
             return self.on_mouse_down(app, evt)
         elif evt.type == pygame.MOUSEBUTTONUP:
@@ -47,25 +49,25 @@ class Button(PygCtl):
         else:
             return True
 
-    def on_mouse_down(self, app: "App", evt):
+    def on_mouse_down(self, app: "App", evt: pygame.event.EventType) -> bool:
         return False
 
-    def on_mouse_up(self, app: "App", evt):
+    def on_mouse_up(self, app: "App", evt: pygame.event.EventType) -> bool:
         return False
 
-    def on_key_down(self, app: "App", evt, pos):
+    def on_key_down(self, app: "App", evt: pygame.event.EventType, pos: IntPoint) -> bool:
         return False
 
-    def on_key_up(self, app: "App", evt, pos):
+    def on_key_up(self, app: "App", evt: pygame.event.EventType, pos: IntPoint):
         return False
 
-    def collide_pt(self, pt):
+    def collide_pt(self, pt: IntPoint) -> bool:
         return self.tot_rect is not None and self.tot_rect.collidepoint(pt[0], pt[1])
 
     def recalc_rect(self):
         pass
 
-    def pre_draw(self, app):
+    def pre_draw(self, app: "App") -> List[pygame.rect.RectType]:
         if self.prev_rect is not None:
             return [app.draw_background_rect(self.prev_rect)]
         return []

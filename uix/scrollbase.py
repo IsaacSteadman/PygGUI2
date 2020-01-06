@@ -1,15 +1,16 @@
-from typing import Optional, List
+from typing import Optional, List, Iterable
 from ..base.pyg_colors import WHITE
-from ..base.pyg_types import Point
+from ..base.pyg_types import Point, IntPoint
 from .pyg_ctl import PygCtl
 import pygame
 
 
 class ScrollBase(PygCtl):
     # if anim_app is specified then scroll base will animate (update its child positions) immediately
-    def __init__(self, lst_prn, n_disp, pos, spacing, anim_app: Optional["App"] = None, tick_event_id=pygame.USEREVENT):
+    def __init__(self, lst_prn: Iterable["ListChild"], n_disp: int, pos: IntPoint, spacing: int,
+                 anim_app: Optional["App"] = None, tick_event_id: int = pygame.USEREVENT):
         super().__init__()
-        self.lst_prn: List[ListChild] = lst_prn
+        self.lst_prn: List[ListChild] = list(lst_prn)
         for child in self.lst_prn:
             child.parent = self
         self.cur_pos = 0
@@ -17,7 +18,7 @@ class ScrollBase(PygCtl):
         self.real_pos = pos
         self.tick_event_id = tick_event_id
         self.line_color = WHITE
-        pygame.time.set_timer(self.tick_event_id, 1000 / 20)
+        pygame.time.set_timer(self.tick_event_id, 1000 // 20)
         off = .5
         if self.n_disp % 2 == 1:
             off = 1
@@ -34,27 +35,27 @@ class ScrollBase(PygCtl):
         self.n_disp = n_disp
         if spacing is not None:
             self.spacing = spacing
-        start_off = (self.n_disp / 2) * self.spacing
+        start_off = (self.n_disp // 2) * self.spacing
         self.x_off_pos = self.get_elem_x_off(start_off - self.center)
         mid_off = self.get_elem_x_off(0)
-        y_off_pos = (self.n_disp - self.n_disp % 2) * self.spacing / 2
+        y_off_pos = (self.n_disp - self.n_disp % 2) * self.spacing // 2
         self.pos = (self.real_pos[0] - self.x_off_pos, self.real_pos[1] - y_off_pos)
         self.coll_rect = pygame.rect.Rect(self.real_pos[0], self.real_pos[1], self.width + (mid_off - self.x_off_pos),
                                           self.n_disp * self.spacing)
         if anim_app is not None:
             self.animate(anim_app)
 
-    def get_elem_x_off(self, y_off_center):
+    def get_elem_x_off(self, y_off_center: int) -> int:
         return 0
 
-    def set_visual(self, n_disp, spacing=None):
+    def set_visual(self, n_disp: int, spacing: Optional[int] = None):
         self.n_disp = n_disp
         if spacing is not None:
             self.spacing = spacing
-        start_off = (self.n_disp / 2) * self.spacing
+        start_off = (self.n_disp // 2) * self.spacing
         self.x_off_pos = self.get_elem_x_off(start_off - self.center)
         mid_off = self.get_elem_x_off(0)
-        y_off_pos = (self.n_disp - self.n_disp % 2) * self.spacing / 2
+        y_off_pos = (self.n_disp - self.n_disp % 2) * self.spacing // 2
         self.pos = (self.real_pos[0] - self.x_off_pos, self.real_pos[1] - y_off_pos)
         self.coll_rect = pygame.rect.Rect(self.real_pos[0], self.real_pos[1], self.width + (mid_off - self.x_off_pos),
                                           self.n_disp * self.spacing)
@@ -86,12 +87,12 @@ class ScrollBase(PygCtl):
         return False
 
     def animate(self, app: "App"):
-        start = self.cur_pos - self.n_disp / 2
-        start_off = (self.n_disp / 2) * self.spacing + (self.tick * self.spacing / self.max_tick)
+        start = self.cur_pos - self.n_disp // 2
+        start_off = (self.n_disp // 2) * self.spacing + (self.tick * self.spacing // self.max_tick)
         if start < 0:
             start_off += -start * self.spacing
             start = 0
-        end = self.cur_pos + (self.n_disp + 1) / 2
+        end = self.cur_pos + (self.n_disp + 1) // 2
         if end > len(self.lst_prn):
             end = len(self.lst_prn)
         for c in range(max(0, start - self.n_disp), start):

@@ -76,7 +76,7 @@ class EntryBox(PygCtl):
             if pos[1] < 0:
                 pos[1] = 0
             cursor_thresh_x, cursor_thresh_y = EntryBox.cursor_thresh
-            ch_row = max(0, min(int(pos[1] / self.line_h + cursor_thresh_y), len(self.txt.lines) - 1))
+            ch_row = max(0, min(int(pos[1] // self.line_h + cursor_thresh_y), len(self.txt.lines) - 1))
             draw_txt = self.txt.get_draw_row(ch_row)
             if self.censor is not None:
                 draw_txt = self.censor(draw_txt)
@@ -130,7 +130,7 @@ class EntryBox(PygCtl):
             if pos[1] < 0:
                 pos[1] = 0
             cursor_thresh_x, cursor_thresh_y = EntryBox.cursor_thresh
-            ch_row = max(0, min(int(pos[1] / self.line_h + cursor_thresh_y), len(self.txt.lines) - 1))
+            ch_row = max(0, min(int(pos[1] // self.line_h + cursor_thresh_y), len(self.txt.lines) - 1))
             draw_txt = self.txt.get_draw_row(ch_row)
             if self.censor is not None:
                 draw_txt = self.censor(draw_txt)

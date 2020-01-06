@@ -1,13 +1,13 @@
-from typing import Optional, Tuple
-from ..base.pyg_types import Color, Point, BgFgColor
+from typing import Optional, List
+from ..base.pyg_types import Color, BgFgColor, IntPoint
 from ..base.pyg_colors import WHITE
 from .pyg_ctl import PygCtl
 import pygame
 
 
-def calc_center(size: Point, pos: Point, center_w: bool = False, center_h: bool = False):
-    pos_x = pos[0] - (int(size[0] / 2) if center_w else 0)
-    pos_y = pos[1] - (int(size[1] / 2) if center_h else 0)
+def calc_center(size: IntPoint, pos: IntPoint, center_w: bool = False, center_h: bool = False) -> pygame.rect.RectType:
+    pos_x = pos[0] - (int(size[0] // 2) if center_w else 0)
+    pos_y = pos[1] - (int(size[1] // 2) if center_h else 0)
     return pygame.rect.Rect((pos_x, pos_y), size)
 
 
@@ -17,7 +17,7 @@ class Label(PygCtl):
     #   1: x centered
     #   2: y centered
     #   3: x and y centered
-    def __init__(self, lbl: str, pos: Point, fnt: pygame.font.FontType, text_color: Color = WHITE,
+    def __init__(self, lbl: str, pos: IntPoint, fnt: pygame.font.FontType, text_color: Color = WHITE,
                  bkgr_color: Optional[Color] = None, centered: int = 0):
         super().__init__()
         self.lbl = lbl
@@ -32,10 +32,10 @@ class Label(PygCtl):
         )
         self.prev_rect = self.tot_rect
 
-    def collide_pt(self, pos: Point):
-        return self.tot_rect.collidepoint(pos[0], pos[1])
+    def collide_pt(self, pt: IntPoint) -> bool:
+        return self.tot_rect.collidepoint(pt[0], pt[1])
 
-    def pre_draw(self, app):
+    def pre_draw(self, app: "App") -> List[pygame.rect.RectType]:
         if self.bkgr_color is None:
             return [app.draw_background_rect(self.prev_rect)]
         else:
@@ -48,7 +48,7 @@ class Label(PygCtl):
     def set_lbl(self, app: "App",
                 lbl: Optional[str],
                 color: Optional[BgFgColor] = None,
-                pos: Optional[Point] = None,
+                pos: Optional[IntPoint] = None,
                 centered: Optional[int] = None):
         no_chg = 0
         if lbl is not None:

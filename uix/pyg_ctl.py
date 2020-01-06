@@ -1,5 +1,6 @@
+from typing import List, Optional
+from ..base.pyg_types import IntPoint
 import pygame
-from typing import List, Tuple, Optional, TYPE_CHECKING
 
 
 class PygCtl(object):
@@ -21,7 +22,7 @@ class PygCtl(object):
             print(lst_rects)
         return []
 
-    def on_evt(self, app: "App", evt: pygame.event.EventType, pos: Tuple[int, int]) -> bool:
+    def on_evt(self, app: "App", evt: pygame.event.EventType, pos: IntPoint) -> bool:
         return False
 
     def on_evt_global(self, app: "App", evt: pygame.event.EventType) -> bool:
@@ -33,7 +34,7 @@ class PygCtl(object):
     def on_mouse_exit(self, app: "App") -> bool:
         return False
 
-    def collide_pt(self, pt: Tuple[int, int]) -> bool:
+    def collide_pt(self, pt: IntPoint) -> bool:
         return False
 
 

@@ -1,5 +1,5 @@
 from typing import List, Optional, Iterable, Callable
-from ..base.pyg_types import Point, Number, Color
+from ..base.pyg_types import Point, Number, Color, IntPoint
 from .pyg_ctl import PygCtl
 import pygame
 
@@ -42,27 +42,27 @@ def collide_line_width(pt_test: Point, pt1: Point, pt2: Point, width: Number) ->
     return collide_pt_circle(pt_test, (c_x, c_y), width)
 
 
-def get_euclid_dist(Pt1, Pt2):
-    return ((Pt1[0] - Pt2[0]) ** 2 + (Pt1[1] - Pt2[1]) ** 2) ** .5
+def get_euclid_dist(pt1: Point, pt2: Point) -> Number:
+    return ((pt1[0] - pt2[0]) ** 2 + (pt1[1] - pt2[1]) ** 2) ** .5
 
 
 class Wire(PygCtl):
-    def __init__(self, lst_pts: Iterable[Point], color: Color, act_func: Optional[Callable[[], None]] = None):
+    def __init__(self, lst_pts: Iterable[IntPoint], color: Color, act_func: Optional[Callable[[], None]] = None):
         super().__init__()
-        self.lst_pts: List[Point] = list(lst_pts)
+        self.lst_pts: List[IntPoint] = list(lst_pts)
         self.color: Color = color
         self.width: int = 1  # width of line drawn
         self.prev_width: int = 1
-        self.prev_lst_pts: Optional[List[Point]] = None
+        self.prev_lst_pts: Optional[List[IntPoint]] = None
         self.m_width: int = 5  # width of mouse capture
         self.act_func = act_func
 
-    def pre_draw(self, app):
+    def pre_draw(self, app: "App") -> List[pygame.rect.RectType]:
         if self.prev_lst_pts is not None:
             return app.draw_background_lines(False, self.prev_lst_pts, self.prev_width)
         return []
 
-    def draw(self, app):
+    def draw(self, app: "App") -> List[pygame.rect.RectType]:
         if len(self.lst_pts) < 2:
             return []
         self.prev_width = self.width
@@ -70,7 +70,7 @@ class Wire(PygCtl):
         self.prev_rect = pygame.draw.lines(app.surf, self.color, False, self.lst_pts, self.width)
         return [self.prev_rect]
 
-    def dirty_redraw(self, app, lst_rects):
+    def dirty_redraw(self, app: "App", lst_rects: List[pygame.rect.RectType]) -> List[pygame.rect.RectType]:
         if self.prev_rect is not None and self.prev_rect.collidelist(lst_rects) == -1:
             return []
         rtn = []
@@ -96,30 +96,30 @@ class Wire(PygCtl):
                     rtn.append(new_rect)
         return rtn
 
-    def on_mouse_enter(self, app):
+    def on_mouse_enter(self, app: "App") -> bool:
         self.width = 2
         return True
 
-    def on_mouse_exit(self, app):
+    def on_mouse_exit(self, app: "App") -> bool:
         self.width = 1
         return True
 
-    def collide_pt(self, pt):
+    def collide_pt(self, pt: IntPoint) -> bool:
         if len(self.lst_pts) < 2: return False
         for c in range(len(self.lst_pts) - 1):
             if collide_line_width(pt, self.lst_pts[c], self.lst_pts[c + 1], self.m_width): return True
         return False
 
-    def on_evt(self, app, evt, pos):
+    def on_evt(self, app: "App", evt: pygame.event.EventType, pos: IntPoint) -> bool:
         if evt.type == pygame.MOUSEBUTTONDOWN and evt.button == 1:
-            rtn = self.Cut(app, pos)
+            rtn = self.cut(app, pos)
             if self.act_func is not None:
                 self.act_func()
             return rtn
         else:
             return False
 
-    def Cut(self, app, pt):
+    def cut(self, app: "App", pt: IntPoint) -> bool:
         cur_dist = 800
         cur_pt = None
         cur_pt_pos = -1
@@ -139,3 +139,6 @@ class Wire(PygCtl):
         app.ctls.append(new_wire)
         app.set_redraw(new_wire)
         return True
+
+
+from ..pyg_app import App

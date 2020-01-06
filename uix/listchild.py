@@ -1,6 +1,6 @@
 from typing import Optional
 from ..utils.options import cache_imgs
-from ..base.pyg_types import Point
+from ..base.pyg_types import IntPoint
 from .pyg_ctl import PygCtl
 import pygame
 
@@ -8,7 +8,7 @@ import pygame
 class ListChild(PygCtl):
     def __init__(self, z_index: int):
         super().__init__()
-        self.pos: Optional[Point] = None
+        self.pos: Optional[IntPoint] = None
         self.z_index = z_index
         self.parent: Optional[ScrollBase] = None
         self.img: Optional[pygame.SurfaceType] = None
@@ -24,7 +24,7 @@ class ListChild(PygCtl):
         except ValueError:
             pass
 
-    def on_evt(self, app, evt, pos):
+    def on_evt(self, app: "App", evt: pygame.event.EventType, pos: IntPoint) -> bool:
         if evt.type == pygame.MOUSEBUTTONDOWN:
             if evt.button == 5:
                 self.parent.scroll_down(app)
@@ -50,7 +50,7 @@ class ListChild(PygCtl):
             app.ctls.insert(self.z_index, self)
         app.set_redraw(self)
 
-    def draw(self, app):
+    def draw(self, app: "App") -> List[pygame.rect.RectType]:
         if self.is_show and self.pos is not None:
             img = self.img
             if img is None:
@@ -65,7 +65,7 @@ class ListChild(PygCtl):
             return [self.prev_rect]
         return []
 
-    def pre_draw(self, app):
+    def pre_draw(self, app: "App") -> List[pygame.rect.RectType]:
         if self.prev_rect is not None:
             rtn = [app.draw_background_rect(self.prev_rect)]
             self.prev_rect = None
@@ -79,10 +79,10 @@ class ListChild(PygCtl):
         self.rel_pos = index - self.parent.cur_pos
         self.coll_rect = pygame.rect.Rect(self.pos, self.get_size())
 
-    def collide_pt(self, pt: Point):
+    def collide_pt(self, pt: IntPoint) -> bool:
         return self.coll_rect is not None and self.coll_rect.collidepoint(pt[0], pt[1])
 
-    def get_size(self):
+    def get_size(self) -> IntPoint:
         try:
             return self.img.get_size()
         except AttributeError:
