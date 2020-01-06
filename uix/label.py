@@ -5,18 +5,42 @@ from .pyg_ctl import PygCtl
 import pygame
 
 
-def calc_center(size: IntPoint, pos: IntPoint, center_w: bool = False, center_h: bool = False) -> pygame.rect.RectType:
-    pos_x = pos[0] - (int(size[0] // 2) if center_w else 0)
-    pos_y = pos[1] - (int(size[1] // 2) if center_h else 0)
+X_ALIGN_LEFT = 0
+X_ALIGN_MID = 1
+X_ALIGN_RIGHT = 2
+Y_ALIGN_TOP = 0
+Y_ALIGN_MID = 4
+Y_ALIGN_BOTTOM = 8
+Y_ALIGN = 12
+X_ALIGN = 3
+
+ALIGN_LOW = 0
+ALIGN_MID = 1
+ALIGN_HIGH = 2
+
+
+def calc_center(size: IntPoint, pos: IntPoint, center_w: int = 0, center_h: int = 0) -> pygame.rect.RectType:
+    if center_w == ALIGN_LOW:
+        pos_x = pos[0]
+    elif center_w == ALIGN_MID:
+        pos_x = pos[0] - size[0] // 2
+    elif center_w == ALIGN_HIGH:
+        pos_x = pos[0] - size[0]
+    else:
+        raise ValueError("Unrecognized center_w value")
+    if center_h == ALIGN_LOW:
+        pos_y = pos[1]
+    elif center_h == ALIGN_MID:
+        pos_y = pos[1] - size[1] // 2
+    elif center_h == ALIGN_HIGH:
+        pos_y = pos[1] - size[1]
+    else:
+        raise ValueError("Unrecognized center_h value")
     return pygame.rect.Rect((pos_x, pos_y), size)
 
 
 class Label(PygCtl):
-    # Centered
-    #   0: not centered
-    #   1: x centered
-    #   2: y centered
-    #   3: x and y centered
+    # Centered is a bitwise combination of X_ALIGN and Y_ALIGN
     def __init__(self, lbl: str, pos: IntPoint, fnt: pygame.font.FontType, text_color: Color = WHITE,
                  bkgr_color: Optional[Color] = None, centered: int = 0):
         super().__init__()
@@ -28,7 +52,7 @@ class Label(PygCtl):
         self.centered = centered
         self.tot_rect = calc_center(
             fnt.size(lbl), self.pos,
-            bool(centered & 1), bool(centered & 2)
+            centered & X_ALIGN, (centered >> 2) & X_ALIGN
         )
         self.prev_rect = self.tot_rect
 
@@ -42,7 +66,7 @@ class Label(PygCtl):
             return [self.prev_rect]
 
     def draw(self, app):
-        self.prev_rect = app.surf.blit(self.fnt.render(self.lbl, 0, self.text_color, self.bkgr_color), self.pos)
+        self.prev_rect = app.surf.blit(self.fnt.render(self.lbl, 0, self.text_color, self.bkgr_color), self.tot_rect)
         return [self.prev_rect]
 
     def set_lbl(self, app: "App",
@@ -72,7 +96,7 @@ class Label(PygCtl):
         self.lbl = lbl
         self.tot_rect = calc_center(
             self.fnt.size(self.lbl), self.pos,
-            bool(self.centered & 1), bool(self.centered & 2)
+            self.centered & X_ALIGN, (self.centered >> 2) & X_ALIGN
         )
         app.set_redraw(self)
 
