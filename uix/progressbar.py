@@ -1,6 +1,7 @@
 from typing import List, Callable, Optional
 from .pyg_ctl import PygCtl
 from ..base.pyg_types import BgFgColor, Number, IntPoint
+from ..utils.options import antialias
 import pygame
 
 
@@ -30,6 +31,7 @@ class ProgressBar(PygCtl):
         self.tooltip_img: Optional[pygame.SurfaceType] = None
         self.tooltip_rect: Optional[pygame.rect.RectType] = None
         self.tooltip_prev_rect: Optional[pygame.rect.RectType] = None
+        self.aa = antialias
 
     def set_value(self, app: "App", value: Number):
         self.value = value
@@ -46,7 +48,7 @@ class ProgressBar(PygCtl):
             frac = (pos[0] - self.pos[0]) / self.size[0]
             if self.tooltip is not None:
                 txt = self.tooltip.hover_fn(self, frac)
-                img: pygame.SurfaceType = self.tooltip.fnt.render(txt, 1, self.tooltip.colors[1], self.tooltip.colors[0])
+                img: pygame.SurfaceType = self.tooltip.fnt.render(txt, self.aa, self.tooltip.colors[1], self.tooltip.colors[0])
                 tt_size = img.get_size()
                 tt_x = pos[0] - tt_size[0] // 2
                 tt_y = self.pos[1] - tt_size[1]

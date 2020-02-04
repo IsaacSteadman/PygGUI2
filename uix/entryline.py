@@ -5,6 +5,10 @@ from ..base.pyg_types import Color, Point
 from .pyg_ctl import PygCtl
 import pygame
 
+
+antialias = True
+
+
 sym_ch = "!@#$%^&*()[]{}:;<>,./?~`-+=\\|"
 
 
@@ -133,6 +137,7 @@ class EntryLine(PygCtl):
         self.fnt = fnt
         self.old_cursor: Optional[tuple] = None
         self.cursor_state = True
+        self.aa = antialias
 
     def on_evt(self, app, evt, pos):
         if evt.type == pygame.MOUSEBUTTONDOWN:
@@ -341,11 +346,11 @@ class EntryLine(PygCtl):
             begin_w = get_pos_in_kern(self.fnt, draw_txt, start)
             end_w = get_pos_in_kern(self.fnt, draw_txt, end)
             img = pygame.Surface(self.fnt.size(draw_txt), pygame.SRCALPHA)
-            img.blit(self.fnt.render(draw_txt[:start], True, self.colors[0]), (0, 0))
-            img.blit(self.fnt.render(draw_txt[start:end], True, *self.highlight_colors), (begin_w, 0))
-            img.blit(self.fnt.render(draw_txt[end:], True, self.colors[0]), (end_w, 0))
+            img.blit(self.fnt.render(draw_txt[:start], self.aa, self.colors[0]), (0, 0))
+            img.blit(self.fnt.render(draw_txt[start:end], self.aa, *self.highlight_colors), (begin_w, 0))
+            img.blit(self.fnt.render(draw_txt[end:], self.aa, self.colors[0]), (end_w, 0))
         else:
-            img = self.fnt.render(draw_txt, True, self.colors[0])
+            img = self.fnt.render(draw_txt, self.aa, self.colors[0])
         rtn = []
         if len(self.colors) > 1:
             rtn.append(app.surf.fill(self.colors[1], self.coll_rect))

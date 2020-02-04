@@ -5,6 +5,9 @@ from .pyg_ctl import PygCtl
 import pygame
 
 
+antialias = False
+
+
 X_ALIGN_LEFT = 0
 X_ALIGN_MID = 1
 X_ALIGN_RIGHT = 2
@@ -55,6 +58,7 @@ class Label(PygCtl):
             centered & X_ALIGN, (centered >> 2) & X_ALIGN
         )
         self.prev_rect = self.tot_rect
+        self.aa = antialias
 
     def collide_pt(self, pt: IntPoint) -> bool:
         return self.tot_rect.collidepoint(pt[0], pt[1])
@@ -66,7 +70,7 @@ class Label(PygCtl):
             return [self.prev_rect]
 
     def draw(self, app):
-        self.prev_rect = app.surf.blit(self.fnt.render(self.lbl, 0, self.text_color, self.bkgr_color), self.tot_rect)
+        self.prev_rect = app.surf.blit(self.fnt.render(self.lbl, self.aa, self.text_color, self.bkgr_color), self.tot_rect)
         return [self.prev_rect]
 
     def set_lbl(self, app: "App",

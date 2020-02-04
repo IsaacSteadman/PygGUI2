@@ -1,6 +1,7 @@
 from typing import List, Tuple, Optional, Callable, Iterable
 from ..base.pyg_types import Point, Color, IntPoint, BgFgColor
 from ..base.pyg_colors import WHITE, RED, GREEN
+from ..utils.options import antialias
 from .button import Button
 import pygame
 
@@ -22,6 +23,7 @@ class ToggleButton(Button):
         self.fnt = fnt
         self.tot_rect = pygame.rect.Rect(pos, fnt.size(lbl))
         self.prev_rect = self.tot_rect
+        self.aa = antialias
 
     def on_mouse_down(self, app: "App", evt: pygame.event.EventType) -> bool:
         if evt.button != 1:
@@ -54,7 +56,7 @@ class ToggleButton(Button):
 
     def draw(self, app: "App") -> List[pygame.rect.RectType]:
         cur_color = self.lst_colors[self.cur_state]
-        return [app.surf.blit(self.fnt.render(self.lbl, False, cur_color[1], cur_color[0]), self.pos)]
+        return [app.surf.blit(self.fnt.render(self.lbl, self.aa, cur_color[1], cur_color[0]), self.pos)]
 
     def recalc_rect(self):
         self.prev_rect = self.tot_rect

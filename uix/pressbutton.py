@@ -1,6 +1,7 @@
 from typing import Optional, Callable
 from ..base.pyg_types import Point, BgFgColor
 from ..base.pyg_colors import WHITE, RED, GREEN
+from ..utils.options import antialias
 from .button import Button
 import pygame
 
@@ -19,6 +20,7 @@ class PressButton(Button):
         self.act_func = act_func
         self.tot_rect = pygame.rect.Rect(pos, fnt.size(lbl))
         self.prev_rect = self.tot_rect
+        self.aa = antialias
 
     def on_mouse_down(self, app, evt):
         if evt.button != 1:
@@ -51,7 +53,7 @@ class PressButton(Button):
         cur_color = self.off_color
         if self.cur_st:
             cur_color = self.on_color
-        return [app.surf.blit(self.fnt.render(self.lbl, False, cur_color[1], cur_color[0]), self.pos)]
+        return [app.surf.blit(self.fnt.render(self.lbl, self.aa, cur_color[1], cur_color[0]), self.pos)]
 
     def recalc_rect(self):
         self.prev_rect = self.tot_rect

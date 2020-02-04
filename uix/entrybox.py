@@ -8,6 +8,9 @@ from .entryline import get_pos_in_kern, EntryLine, clipboard_types
 import pygame
 
 
+antialias = True
+
+
 class EntryBox(PygCtl):
     cursor_timer_event_id = pygame.USEREVENT + 1
     # cursor threshold, the fraction of character width, height
@@ -52,6 +55,7 @@ class EntryBox(PygCtl):
         self.cursor_col: Optional[int] = None
         self.line_h: int = fnt.get_linesize()
         self.old_cursor: Optional[tuple] = None
+        self.aa = antialias
 
     def set_size(self, size):
         self.size = size
@@ -324,14 +328,14 @@ class EntryBox(PygCtl):
             draw_txt = self.txt.get_draw_row(c)
             if self.censor is not None:
                 draw_txt = self.censor(draw_txt)
-            img = self.fnt.render(draw_txt, True, self.colors[0])
+            img = self.fnt.render(draw_txt, self.aa, self.colors[0])
             rtn[c] = app.surf.blit(img, (self.pos[0], self.pos[1] + self.line_h * c))
         if start == end:
             c = start[1]
             draw_txt = self.txt.get_draw_row(c)
             if self.censor is not None:
                 draw_txt = self.censor(draw_txt)
-            img = self.fnt.render(draw_txt, True, self.colors[0])
+            img = self.fnt.render(draw_txt, self.aa, self.colors[0])
             rtn[c] = app.surf.blit(img, (self.pos[0], self.pos[1] + self.line_h * c))
         elif start[1] == end[1]:
             c = start[1]
@@ -341,9 +345,9 @@ class EntryBox(PygCtl):
             begin_w = get_pos_in_kern(self.fnt, draw_txt, start[0])
             end_w = get_pos_in_kern(self.fnt, draw_txt, end[0])
             img = pygame.Surface(self.fnt.size(draw_txt), pygame.SRCALPHA)
-            img.blit(self.fnt.render(draw_txt[:start[0]], True, self.colors[0]), (0, 0))
-            img.blit(self.fnt.render(draw_txt[start[0]:end[0]], True, *self.highlight_colors), (begin_w, 0))
-            img.blit(self.fnt.render(draw_txt[end[0]:], True, self.colors[0]), (end_w, 0))
+            img.blit(self.fnt.render(draw_txt[:start[0]], self.aa, self.colors[0]), (0, 0))
+            img.blit(self.fnt.render(draw_txt[start[0]:end[0]], self.aa, *self.highlight_colors), (begin_w, 0))
+            img.blit(self.fnt.render(draw_txt[end[0]:], self.aa, self.colors[0]), (end_w, 0))
             rtn[c] = app.surf.blit(img, (self.pos[0], self.pos[1] + self.line_h * c))
         else:
             c = start[1]
@@ -352,8 +356,8 @@ class EntryBox(PygCtl):
                 draw_txt = self.censor(draw_txt)
             begin_w = get_pos_in_kern(self.fnt, draw_txt, start[0])
             img = pygame.Surface(self.fnt.size(draw_txt), pygame.SRCALPHA)
-            img.blit(self.fnt.render(draw_txt[:start[0]], True, self.colors[0]), (0, 0))
-            img.blit(self.fnt.render(draw_txt[start[0]:], True, *self.highlight_colors), (begin_w, 0))
+            img.blit(self.fnt.render(draw_txt[:start[0]], self.aa, self.colors[0]), (0, 0))
+            img.blit(self.fnt.render(draw_txt[start[0]:], self.aa, *self.highlight_colors), (begin_w, 0))
             rtn[c] = app.surf.blit(img, (self.pos[0], self.pos[1] + self.line_h * c))
             c = end[1]
             draw_txt = self.txt.get_draw_row(c)
@@ -361,20 +365,20 @@ class EntryBox(PygCtl):
                 draw_txt = self.censor(draw_txt)
             end_w = get_pos_in_kern(self.fnt, draw_txt, end[0])
             img = pygame.Surface(self.fnt.size(draw_txt), pygame.SRCALPHA)
-            img.blit(self.fnt.render(draw_txt[:end[0]], True, *self.highlight_colors), (0, 0))
-            img.blit(self.fnt.render(draw_txt[end[0]:], True, self.colors[0]), (end_w, 0))
+            img.blit(self.fnt.render(draw_txt[:end[0]], self.aa, *self.highlight_colors), (0, 0))
+            img.blit(self.fnt.render(draw_txt[end[0]:], self.aa, self.colors[0]), (end_w, 0))
             rtn[c] = app.surf.blit(img, (self.pos[0], self.pos[1] + self.line_h * c))
         for c in range(start[1] + 1, end[1]):
             draw_txt = self.txt.get_draw_row(c)
             if self.censor is not None:
                 draw_txt = self.censor(draw_txt)
-            img = self.fnt.render(draw_txt, True, *self.highlight_colors)
+            img = self.fnt.render(draw_txt, self.aa, *self.highlight_colors)
             rtn[c] = app.surf.blit(img, (self.pos[0], self.pos[1] + self.line_h * c))
         for c in range(end[1] + 1, len(self.txt.lines)):
             draw_txt = self.txt.get_draw_row(c)
             if self.censor is not None:
                 draw_txt = self.censor(draw_txt)
-            img = self.fnt.render(draw_txt, True, self.colors[0])
+            img = self.fnt.render(draw_txt, self.aa, self.colors[0])
             rtn[c] = app.surf.blit(img, (self.pos[0], self.pos[1] + self.line_h * c))
         if self.cursor_state:
             c = self.ch_pos[1]
