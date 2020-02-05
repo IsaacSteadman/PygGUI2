@@ -1,5 +1,6 @@
 from typing import Optional, List, Dict, Callable
 from .base.pyg_types import Point, Color, Number
+import time
 import pygame
 
 
@@ -18,13 +19,32 @@ class App(object):
         self.chgd_pos = False
         self.used_time: Number = 0
         self.should_redraw: bool = False
+        self.record_busy_time_interval: float = 0.0
+        self.record_interval_start_time: float = 0.0
+        self.num_recorded: int = 0
 
     def exit(self):
         self.should_run = False
 
     def run(self):
-        while self.should_run:
-            self.process_event(pygame.event.wait())
+        if self.record_busy_time_interval:
+            t_before_wait = time.time()
+            while self.should_run:
+                evt = pygame.event.wait()
+                t_before_proc = time.time()
+                if t_before_proc - self.record_interval_start_time >= self.record_busy_time_interval:
+                    self.record_interval_start_time = t_before_proc
+                    self.non_busy_time = 0.0
+                    self.busy_time = 0.0
+                    self.num_recorded = 0
+                self.num_recorded += 1
+                self.non_busy_time += t_before_proc - t_before_wait
+                self.process_event(evt)
+                t_before_wait = time.time()
+                self.busy_time += t_before_wait - t_before_proc
+        else:
+            while self.should_run:
+                self.process_event(pygame.event.wait())
 
     def calc_collide(self):
         if self.cur_ctl is None or not self.cur_ctl.collide_pt(self.cur_pos):
