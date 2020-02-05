@@ -32,6 +32,14 @@ class ProgressBar(PygCtl):
         self.tooltip_rect: Optional[pygame.rect.RectType] = None
         self.tooltip_prev_rect: Optional[pygame.rect.RectType] = None
         self.aa = antialias
+    
+    def set_pos_size(self, app: "App", pos: Optional[IntPoint], size: Optional[IntPoint]):
+        if pos is not None:
+            self.pos = pos
+        if size is not None:
+            self.size = size
+        self.prev_rect = pygame.rect.Rect(self.pos, self.size)
+        app.set_redraw(self)
 
     def set_value(self, app: "App", value: Number):
         self.value = value
