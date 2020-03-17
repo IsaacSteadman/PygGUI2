@@ -67,6 +67,7 @@ class ProgressBar(PygCtl):
         return False
 
     def on_mouse_exit(self, app: "App") -> bool:
+        self.tooltip_prev_rect = self.tooltip_rect
         self.tooltip_img = None
         self.tooltip_rect = None
         return True
